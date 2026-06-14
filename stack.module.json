@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "id": "onlyoffice",
+  "repo": "onlyoffice-stack-module",
+  "runtimeId": "onlyoffice",
+  "lifecycle": "active",
+  "dependencies": [
+    "stack-foundation"
+  ],
+  "overlays": [
+    "stack.compose/onlyoffice.yml"
+  ]
+}
