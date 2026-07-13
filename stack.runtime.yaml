@@ -1,0 +1,77 @@
+---
+schemaVersion: 1
+module: "onlyoffice"
+target: "apps"
+services:
+  onlyoffice:
+    image: "onlyoffice/documentserver:8.3.3"
+    containerName: "onlyoffice"
+    lifecycle: "daemon"
+    updatePolicy: "registry"
+    placement: "rootful"
+    dependencies:
+      caddy: "healthy"
+    environment:
+      JWT_ENABLED: true
+      JWT_SECRET: "${ONLYOFFICE_JWT_SECRET}"
+      JWT_HEADER: "AuthorizationJwt"
+      JWT_IN_BODY: true
+      ONLYOFFICE_DISABLE_PLUGIN_UPDATES: "${ONLYOFFICE_DISABLE_PLUGIN_UPDATES:-true}"
+      NODE_EXTRA_CA_CERTS: "/ca/caddy-ca.crt"
+      SSL_CERT_FILE: "/ca/caddy-ca.crt"
+      CURL_CA_BUNDLE: "/ca/caddy-ca.crt"
+    networks:
+      caddy: null
+    volumes:
+    - "onlyoffice_data:/var/www/onlyoffice"
+    - "onlyoffice_lib:/var/lib/onlyoffice"
+    - "onlyoffice_document_data:/var/www/onlyoffice/Data"
+    - "onlyoffice_fonts:/usr/share/fonts/truetype/custom"
+    - "onlyoffice_postgresql:/var/lib/postgresql"
+    - "caddy_ca:/ca:ro"
+    ephemeralImageVolumes:
+    - "/var/lib/rabbitmq"
+    - "/var/lib/redis"
+    - "/var/log/onlyoffice"
+    health:
+      test:
+      - "CMD"
+      - "wget"
+      - "--quiet"
+      - "--tries=1"
+      - "--spider"
+      - "http://localhost:80/healthcheck"
+      interval: "60s"
+      timeout: "10s"
+      retries: 3
+      start_period: "120s"
+    entrypoint:
+    - "/bin/sh"
+    - "-lc"
+    - "# Install the caddy CA into the container trust store so callback/storage\n\
+      # TLS handshakes to seafile.${DOMAIN} are trusted by all runtime components.\n\
+      if [ -s /ca/caddy-ca.crt ]; then\n  cp /ca/caddy-ca.crt /usr/local/share/ca-certificates/caddy-ca.crt\n\
+      \  update-ca-certificates\nfi\nchmod 755 /var/www/onlyoffice\nif [ \"${ONLYOFFICE_DISABLE_PLUGIN_UPDATES:-true}\"\
+      \ = \"true\" ] && [ -x /usr/bin/documentserver-pluginsmanager.sh ]; then\n \
+      \ if [ ! -e /usr/bin/documentserver-pluginsmanager.sh.orig ]; then\n    mv /usr/bin/documentserver-pluginsmanager.sh\
+      \ /usr/bin/documentserver-pluginsmanager.sh.orig\n  fi\n  cat >/usr/bin/documentserver-pluginsmanager.sh\
+      \ <<'EOF'\n#!/bin/bash\necho \"OnlyOffice plugin marketplace update skipped\
+      \ by ONLYOFFICE_DISABLE_PLUGIN_UPDATES=true\"\nexit 0\nEOF\n  chmod +x /usr/bin/documentserver-pluginsmanager.sh\n\
+      fi\nexec /app/ds/run-document-server.sh\n"
+    restart: "unless-stopped"
+    resources:
+      limits:
+        memory: "${ONLYOFFICE_MEMORY_LIMIT:-4G}"
+        cpus: "${ONLYOFFICE_CPU_LIMIT:-2.0}"
+networks: {}
+volumes:
+  onlyoffice_data:
+    hostPath: "${STACK_VOLUME_ROOT}/onlyoffice_data"
+  onlyoffice_lib:
+    hostPath: "${STACK_VOLUME_ROOT}/onlyoffice_lib"
+  onlyoffice_document_data:
+    hostPath: "${STACK_VOLUME_ROOT}/onlyoffice_document_data"
+  onlyoffice_fonts:
+    hostPath: "${STACK_VOLUME_ROOT}/onlyoffice_fonts"
+  onlyoffice_postgresql:
+    hostPath: "${STACK_VOLUME_ROOT}/onlyoffice_postgresql"

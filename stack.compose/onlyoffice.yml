@@ -13,6 +13,7 @@ services:
           cp /ca/caddy-ca.crt /usr/local/share/ca-certificates/caddy-ca.crt
           update-ca-certificates
         fi
+        chmod 755 /var/www/onlyoffice
         if [ "${ONLYOFFICE_DISABLE_PLUGIN_UPDATES:-true}" = "true" ] && [ -x /usr/bin/documentserver-pluginsmanager.sh ]; then
           if [ ! -e /usr/bin/documentserver-pluginsmanager.sh.orig ]; then
             mv /usr/bin/documentserver-pluginsmanager.sh /usr/bin/documentserver-pluginsmanager.sh.orig
