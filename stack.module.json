@@ -18,7 +18,8 @@
   "overlays": [
     "stack.compose/onlyoffice.yml",
     "stack.kotlin/test-runner/src/main/kotlin/org/webservices/testrunner/suites/OnlyOfficeFileManagementTests.kt",
-    "stack.kotlin/test-runner/src/main/kotlin/org/webservices/testrunner/suites/OnlyOfficeExtendedProductivityTests.kt"
+    "stack.kotlin/test-runner/src/main/kotlin/org/webservices/testrunner/suites/OnlyOfficeExtendedProductivityTests.kt",
+    "stack.runtime.yaml"
   ],
   "testAssets": []
 }
