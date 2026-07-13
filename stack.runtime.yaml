@@ -51,7 +51,7 @@ services:
     - "# Install the caddy CA into the container trust store so callback/storage\n\
       # TLS handshakes to seafile.${DOMAIN} are trusted by all runtime components.\n\
       if [ -s /ca/caddy-ca.crt ]; then\n  cp /ca/caddy-ca.crt /usr/local/share/ca-certificates/caddy-ca.crt\n\
-      \  update-ca-certificates\nfi\nif [ \"${ONLYOFFICE_DISABLE_PLUGIN_UPDATES:-true}\"\
+      \  update-ca-certificates\nfi\nchmod 755 /var/www/onlyoffice\nif [ \"${ONLYOFFICE_DISABLE_PLUGIN_UPDATES:-true}\"\
       \ = \"true\" ] && [ -x /usr/bin/documentserver-pluginsmanager.sh ]; then\n \
       \ if [ ! -e /usr/bin/documentserver-pluginsmanager.sh.orig ]; then\n    mv /usr/bin/documentserver-pluginsmanager.sh\
       \ /usr/bin/documentserver-pluginsmanager.sh.orig\n  fi\n  cat >/usr/bin/documentserver-pluginsmanager.sh\
