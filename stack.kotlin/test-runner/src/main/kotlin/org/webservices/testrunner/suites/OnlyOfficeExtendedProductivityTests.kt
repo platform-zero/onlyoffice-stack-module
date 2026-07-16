@@ -20,15 +20,9 @@ test("OnlyOffice: Service is accessible") {
 
     test("OnlyOffice: Health check endpoint") {
         val response = client.getRawResponse("${endpoints.onlyoffice}/healthcheck")
-        when (response.status) {
-            HttpStatusCode.OK -> {
-                val body = response.bodyAsText()
-                body shouldContain "true"
-                println("      ✓ OnlyOffice health check passed")
-            }
-            HttpStatusCode.NotFound -> println("      ✓ OnlyOffice build does not expose /healthcheck")
-            else -> fail("OnlyOffice health check failed: ${response.status}")
-        }
+        response.status shouldBe HttpStatusCode.OK
+        response.bodyAsText() shouldContain "true"
+        println("      ✓ OnlyOffice health check passed")
     }
 
     test("OnlyOffice: Document conversion API exists") {
