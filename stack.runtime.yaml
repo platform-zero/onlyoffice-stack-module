@@ -20,6 +20,11 @@ services:
       NODE_EXTRA_CA_CERTS: "/ca/caddy-ca.crt"
       SSL_CERT_FILE: "/ca/caddy-ca.crt"
       CURL_CA_BUNDLE: "/ca/caddy-ca.crt"
+    # Storage/download callbacks retain public hostnames and strict TLS; native
+    # rootless traffic to this host uses its owned gateway rather than its LAN IP.
+    extraHosts:
+    - "seafile.${DOMAIN}:host-gateway"
+    - "files-native.${DOMAIN}:host-gateway"
     networks:
       caddy: null
     volumes:
