@@ -4,7 +4,7 @@ module: "onlyoffice"
 target: "apps"
 services:
   onlyoffice:
-    image: "onlyoffice/documentserver:8.3.3"
+    image: "onlyoffice/documentserver:8.3.3@sha256:0daa2d1d414d49286bfa9495fc0c936e7e73edaf8944a61102a7a6353a952297"
     containerName: "onlyoffice"
     lifecycle: "daemon"
     updatePolicy: "registry"
